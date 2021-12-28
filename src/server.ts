@@ -55,4 +55,42 @@ app.get(
   }
 );
 
+app.get(
+  "/read/:id",
+  TodoValidator.checkIdParams(),
+  Middleware.handleValidationErros,
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const record = await TodoInstance.findOne({ where: { id } });
+      return res.json(record);
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msg: "Failed to read", status: 500, route: "/read/:id" });
+    }
+  }
+);
+
+app.put("/update/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const record = await TodoInstance.findOne({ where: { id } });
+
+    if (!record) return res.json({ msg: "Cannot find existing todo" });
+
+    const updatedRecord = await record.update({
+      completed: !record.getDataValue("completed"),
+    });
+    return res.json({ record: updatedRecord });
+  } catch (error) {
+    return res.json({
+      msg: "Fail to update",
+      status: 500,
+      route: "/update/:id",
+    });
+  }
+});
+
 app.listen(port, () => console.log(`listening on localhost:${port}`));

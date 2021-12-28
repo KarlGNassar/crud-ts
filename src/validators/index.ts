@@ -1,4 +1,4 @@
-import { body, query } from "express-validator";
+import { body, param, query } from "express-validator";
 
 class TodoValidator {
   checkCreateTodo() {
@@ -28,6 +28,16 @@ class TodoValidator {
         .optional()
         .isNumeric()
         .withMessage("The offset should be a number"),
+    ];
+  }
+
+  checkIdParams() {
+    return [
+      param("id")
+        .notEmpty()
+        .withMessage("The id should not be empty")
+        .isUUID(4)
+        .withMessage("The value should be UUID v4"),
     ];
   }
 }
