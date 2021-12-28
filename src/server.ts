@@ -36,15 +36,23 @@ app.post(
   }
 );
 
-app.get("/read", async (req: Request, res: Response) => {
-  try {
-    const records = await TodoInstance.findAll({ where: {} });
-    return res.json(records);
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ msg: "Failed to read", status: 500, route: "/read" });
+app.get(
+  "/read",
+  TodoValidator.checkReadTodo(),
+  Middleware.handleValidationErros,
+  async (req: Request, res: Response) => {
+    try {
+      const limit = req.query?.limit as number | undefined;
+      const offset = req.query?.offset as number | undefined;
+
+      const records = await TodoInstance.findAll({ where: {}, limit, offset });
+      return res.json(records);
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msg: "Failed to read", status: 500, route: "/read" });
+    }
   }
-});
+);
 
 app.listen(port, () => console.log(`listening on localhost:${port}`));
