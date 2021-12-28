@@ -72,25 +72,54 @@ app.get(
   }
 );
 
-app.put("/update/:id", async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
+app.put(
+  "/update/:id",
+  TodoValidator.checkIdParams(),
+  Middleware.handleValidationErros,
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
 
-    const record = await TodoInstance.findOne({ where: { id } });
+      const record = await TodoInstance.findOne({ where: { id } });
 
-    if (!record) return res.json({ msg: "Cannot find existing todo" });
+      if (!record) return res.json({ msg: "Cannot find existing todo" });
 
-    const updatedRecord = await record.update({
-      completed: !record.getDataValue("completed"),
-    });
-    return res.json({ record: updatedRecord });
-  } catch (error) {
-    return res.json({
-      msg: "Fail to update",
-      status: 500,
-      route: "/update/:id",
-    });
+      const updatedRecord = await record.update({
+        completed: !record.getDataValue("completed"),
+      });
+      return res.json({ record: updatedRecord });
+    } catch (error) {
+      return res.json({
+        msg: "Fail to update",
+        status: 500,
+        route: "/update/:id",
+      });
+    }
   }
-});
+);
+
+app.delete(
+  "/delete/:id",
+  TodoValidator.checkIdParams(),
+  Middleware.handleValidationErros,
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+
+      const record = await TodoInstance.findOne({ where: { id } });
+
+      if (!record) return res.json({ msg: "Cannot find existing todo" });
+
+      const deletedRecord = await record.destroy();
+      return res.json({ record: deletedRecord });
+    } catch (error) {
+      return res.json({
+        msg: "Fail to update",
+        status: 500,
+        route: "/delete/:id",
+      });
+    }
+  }
+);
 
 app.listen(port, () => console.log(`listening on localhost:${port}`));
