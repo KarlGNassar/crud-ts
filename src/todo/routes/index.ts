@@ -2,7 +2,7 @@ import express from "express";
 
 import TodoController from "../controller";
 import TodoValidator from "../validators";
-import Middleware from "../middleware";
+import Middleware from "../../middleware";
 
 const router = express.Router();
 

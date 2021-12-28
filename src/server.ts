@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 
 import db from "./config/database.config";
-import todoRouter from "./routes";
+import todoRouter from "./todo/routes";
 
 const app = express();
 const port = 9000;
